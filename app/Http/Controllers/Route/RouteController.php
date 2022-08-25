@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Route;
 
 use App\Http\Controllers\Controller;
 use App\Models\Keluhan;
+use App\Models\Teknisi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -21,14 +22,21 @@ class RouteController extends Controller
 
     public function keluhan()
     {
-        $keluhan = Keluhan::all();
+        try {
+            $keluhan = Keluhan::all();
         
-        $dataKeluhan = DB::table('tbl_keluhan')
-                        ->join('tbl_pelanggan', 'tbl_keluhan.id_pelanggan', '=', 'tbl_pelanggan.id')
-                        ->join('tbl_kategori', 'tbl_keluhan.id_kategori', '=', 'tbl_kategori.id')
-                        ->join('tbl_teknisi', 'tbl_keluhan.id_teknisi', '=', 'tbl_teknisi.id')
-                        ->get();
+            $dataKeluhan = Keluhan::join('tbl_pelanggan', 'tbl_keluhan.id_pelanggan', '=', 'tbl_pelanggan.id')
+                            ->join('tbl_wilayah', 'tbl_pelanggan.id_wilayah', '=', 'tbl_wilayah.id')
+                            ->join('tbl_kategori', 'tbl_keluhan.id_kategori', '=', 'tbl_kategori.id')
+                            ->select('tbl_wilayah.wilayah', 'tbl_pelanggan.*', 'tbl_keluhan.*', 'tbl_kategori.kategori')
+                            ->get();
 
-        return view('keluhan', compact('dataKeluhan'));
+            $teknisis = Teknisi::all();
+
+            return view('keluhan', compact('dataKeluhan', 'teknisis'));
+        } catch (\Throwable $th) {
+            //throw $th;
+            return $th->getMessage();
+        }
     }
 }

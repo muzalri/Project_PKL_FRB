@@ -14,7 +14,7 @@
         <img src="{{ asset('/') }}dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
       </div>
       <div class="info">
-        <a href="#" class="d-block">Alexander Pierce</a>
+        <a href="#" class="d-block">{{ Auth::user()->name }}</a>
       </div>
     </div>
 
@@ -81,6 +81,14 @@
             </ul>
           </li>
         @endadmin
+        <li class="nav-item">
+          <a href="{{ route('admin.user.index') }}" class="nav-link {{ $activePage == 'user' ? 'active' : '' }}">
+            <i class="nav-icon fas fa-th"></i>
+            <p>
+              User
+            </p>
+          </a>
+        </li>
         <li class="nav-item">
           <a href="@admin {{ route('admin.keluhan') }} @else {{ route('teknisi.keluhan') }} @endadmin" class="nav-link {{ $activePage == 'keluhan' ? 'active' : '' }}">
             <i class="nav-icon fas fa-th"></i>

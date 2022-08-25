@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\User;
+use App\Models\Teknisi;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\Kategori;
 
-class KategoriController extends Controller
+class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,16 +17,15 @@ class KategoriController extends Controller
     public function index()
     {
         try {
-            $dataKategori = Kategori::all();
+            $dataUser = User::where('role', '1')->get();
 
             if (request()->ajax()) {
-                return view('admin.kategori.load', compact('dataKategori'));
+                return view('admin.user.load', compact('dataUser'));
             }
 
-            return view('admin.kategori.index', compact('dataKategori'));
+            return view('admin.user.index', compact('dataUser'));
         } catch (\Throwable $th) {
-            //throw $th;
-            return $th->getMessage();
+            throw $th;
         }
     }
 
@@ -38,13 +38,12 @@ class KategoriController extends Controller
     {
         try {
             if (request()->ajax()) {
-                return view('_partials.modals.kategori');
+                return view('_partials.modals.user');
             }
 
-            return view('admin.kategori.create');
+            return view('admin.user.create');
         } catch (\Throwable $th) {
-            //throw $th;
-            return $th->getMessage();
+            throw $th;
         }
     }
 
@@ -57,30 +56,48 @@ class KategoriController extends Controller
     public function store(Request $request)
     {
         try {
-            Kategori::create($request->all());
+            $random = now()->format('ym') . rand(10000000, 99999999);
+
+            Teknisi::create([
+                'id' => $random,
+                'nama' => $request->input('nama'),
+                'nik' => $request->input('nik'),
+                'no_hp' => $request->input('no_hp'),
+                'alamat' => $request->input('alamat'),
+                'jabatan' => $request->input('jabatan'),
+                'status' => 1,
+            ]);
+
+            User::create([
+                'name' => $request->input('nama'),
+                'email' => $request->input('email'),
+                'pwd' => $request->input('password'),
+                'password' => bcrypt($request->input('password')),
+                'role' => '1',
+                'id_teknisi' => $random,
+            ]);
 
             if (request()->ajax()) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Berhasil Menyimpan !'
+                'message' => 'Berhasil Menyimpan !'
                 ]);
             }
 
-            return redirect()->route('admin.kategori.index')
-                ->with('success', 'Berhasil Menyimpan !');
+            return redirect()->route('admin.user.index')
+                            ->with('success', 'Berhasil Menyimpan !');
         } catch (\Throwable $th) {
-            //throw $th;
-            return $th->getMessage();
+            throw $th;
         }
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(User $user)
     {
         //
     }
@@ -88,22 +105,19 @@ class KategoriController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(User $user)
     {
         try {
-            $kategori = Kategori::find($id);
-
             if (request()->ajax()) {
-                return view('_partials.modals.kategori', compact('kategori'));
+                return view('_partials.modals.user', compact('user'));
             }
 
-            return view('admin.kategori.edit', compact('kategori'));
+            return view('admin.kategori.edit', compact('user'));
         } catch (\Throwable $th) {
-            //throw $th;
-            return $th->getMessage();
+            throw $th;
         }
     }
 
@@ -111,15 +125,17 @@ class KategoriController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, User $user)
     {
         try {
-            $kategori = Kategori::find($id);
-
-            $kategori->update($request->all());
+            $user->update([
+                'email' => $request->email,
+                'pwd' => $request->password,
+                'password' => bcrypt($request->password),
+            ]);
 
             if (request()->ajax()) {
                 return response()->json([
@@ -128,26 +144,23 @@ class KategoriController extends Controller
                 ]);
             }
 
-            return redirect()->route('admin.kategori.index')
+            return redirect()->route('admin.user.index')
                 ->with('success', 'Berhasil Update !');
         } catch (\Throwable $th) {
-            //throw $th;
-            return $th->getMessage();
+            throw $th;
         }
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(User $user)
     {
         try {
-            $kategori = Kategori::find($id);
-
-            $kategori->delete();
+            $user->delete();
 
             if (request()->ajax()) {
                 return response()->json([
@@ -156,10 +169,9 @@ class KategoriController extends Controller
                 ]);
             }
 
-            return redirect()->route('admin.kategori.index')->with('success', 'Berhasil Hapus !');
+            return redirect()->route('admin.user.index')->with('success', 'Berhasil Hapus !');
         } catch (\Throwable $th) {
-            //throw $th;
-            return $th->getMessage();
+            throw $th;
         }
     }
 }

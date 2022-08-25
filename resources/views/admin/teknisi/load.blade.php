@@ -2,6 +2,7 @@
   <thead class="thead-inverse">
     <tr>
       <th>No</th>
+      <th>Kode Teknisi</th>
       <th>Nama</th>
       <th>Jabatan</th>
       <th>NIK</th>
@@ -14,6 +15,7 @@
     @foreach ($dataTeknisi as $teknisi)
       <tr>
         <td scope="row">{{ $loop->iteration }}</td>
+        <td>{{ $teknisi->id }}</td>
         <td>{{ $teknisi->nama }}</td>
         <td>{{ $teknisi->jabatan }}</td>
         <td>{{ $teknisi->nik }}</td>

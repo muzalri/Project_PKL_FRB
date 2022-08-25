@@ -1,17 +1,17 @@
-@extends('layouts.app', ['title' => 'Pelanggan', 'activePage' => 'pelanggan'])
+@extends('layouts.app', ['title' => 'User', 'activePage' => 'user'])
 
 @section('breadcrumb')
 <section class="content-header">
   <div class="container-fluid">
     <div class="row mb-2">
       <div class="col-sm-6">
-        <h1>Data Pelanggan</h1>
+        <h1>Data User</h1>
       </div>
       <div class="col-sm-6">
         <ol class="breadcrumb float-sm-right">
           <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
           <li class="breadcrumb-item"><a href="#">Admin</a></li>
-          <li class="breadcrumb-item active">Pelanggan</li>
+          <li class="breadcrumb-item active">User</li>
         </ol>
       </div>
     </div>
@@ -23,10 +23,10 @@
 <div class="content">
   <div class="container-fluid">
     <div class="row justify-content-center ">
-      <div class="col-12">
+      <div class="col-8">
         <div class="card">
           <div class="card-header">
-            <h3 class="card-title">Data Pelanggan</h3>
+            <h3 class="card-title">Data User</h3>
             <div class="card-tools">
               <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                 <i class="fas fa-minus"></i>
@@ -37,7 +37,10 @@
             </div>
           </div>
           <div class="card-body">
-            <div id="load-pelanggan"></div>
+            <div class="text-right mb-3">
+              <button type="button" class="btn btn-primary" onclick="newUser()">+ User</button>
+            </div>
+            <div id="load-user"></div>
           </div>
         </div>
       </div>
@@ -49,32 +52,33 @@
 @push('js')
   <script>
     $(function() {
-      getPelanggan()
+      getUser()
     })
 
-    async function getPelanggan() {
+    async function getUser() {
       try {
-        var sectionData = $('#load-pelanggan')
-        url = "{{ route('admin.pelanggan.index') }}"
+        var sectionData = $('#load-user')
+        url = "{{ route('admin.user.index') }}"
         const response = await HitData(url, null, "GET");
         sectionData.html(response)
         
-        $("#pelanggan-table").DataTable({
+        $("#user-table").DataTable({
           'pageLength': 4,
           "responsive": true, "lengthChange": false, "autoWidth": false,
           "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-        }).buttons().container().appendTo('#pelanggan-table-wrapper');
+        }).buttons().container().appendTo('#user-table-wrapper');
       } catch (error) {
           console.log(error)
       }
     }
-    async function newPelanggan() {
+
+    async function newUser() {
       try {
-        var url = "{{ route('admin.pelanggan.create') }}"
+        var url = "{{ route('admin.user.create') }}"
         var sectionModal = $('.modals')
         sectionModal.html('')
         const response = await HitData(url, null, 'GET');
-        var modalResponse = sectionModal.html(response).find('#modalPelanggan');
+        var modalResponse = sectionModal.html(response).find('#modalUser');
 
         modalResponse.modal('show')
       } catch (error) {
@@ -82,13 +86,13 @@
       }
     }
 
-    async function editPelanggan(id) {
+    async function editUser(id) {
       try {
         var sectionModal = $('.modals')
         sectionModal.html('')
-        url = `/admin/pelanggan/${id}/edit`
+        url = `/admin/user/${id}/edit`
         const response = await HitData(url, null, 'GET')
-        var modalResponse = sectionModal.html(response).find('#modalPelanggan')
+        var modalResponse = sectionModal.html(response).find('#modalUser')
         modalResponse.modal('show')
       } catch (error) {
         console.log(error)
@@ -98,33 +102,42 @@
     async function postCreateOrUpdate(url, type) {
         try {
             event.preventDefault();
-            var data = {
-                nama_pelanggan: $('#nama-input').val(),
+            if (type == 'POST') {
+              var data = {
+                email: $('#email-input').val(),
+                password: $('#password-input').val(),
+                nama: $('#nama-input').val(),
+                nik: $('#nik-input').val(),
                 no_hp: $('#no_hp-input').val(),
+                jabatan: $('#jabatan-input').val(),
                 alamat: $('#alamat-input').val(),
-                id_wilayah: $('#wilayah-input').val(),
-                status: '1'
+              }
+            } else if (type == 'PUT') {
+              var data = {
+                email: $('#email-input').val(),
+                password: $('#password-input').val()
+              }
             }
             const response = await HitData(url, data, type);
-
+            
             notif('info', response.message)
 
-            $('#modalPelanggan').modal('hide')
-            getPelanggan()
+            $('#modalUser').modal('hide')
+            getUser()
         } catch (error) {
             console.log(error)
             notif('error', error)
         }
     }
 
-    async function deletePelanggan(id) {
+    async function deleteUser(id) {
       try {
-        var url = `/admin/pelanggan/${id}`
+        var url = `/admin/user/${id}`
         const response = await HitData(url, null, 'DELETE');
 
         notif('info', response.message)
 
-        getPelanggan()
+        getUser()
       } catch (error) {
         console.log(error)
         notif('error', error)

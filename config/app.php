@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Facade;
+use Telegram\Bot\Laravel\TelegramServiceProvider;
 
 return [
 
@@ -185,6 +186,7 @@ return [
         /*
          * Package Service Providers...
          */
+        \Telegram\Bot\Laravel\TelegramServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -210,6 +212,7 @@ return [
 
     'aliases' => Facade::defaultAliases()->merge([
         // 'ExampleClass' => App\Example\ExampleClass::class,
+        'Telegram' => Telegram\Bot\Laravel\Facades\Telegram::class,
     ])->toArray(),
 
 ];

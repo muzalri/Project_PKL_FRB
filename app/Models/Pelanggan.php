@@ -12,4 +12,10 @@ class Pelanggan extends Model
     protected $table = 'tbl_pelanggan';
 
     protected $fillable = ['id', 'nama_pelanggan', 'no_hp', 'alamat', 'id_wilayah', 'status'];
+
+    protected $primaryKey = 'id';
+
+    protected $keyType = 'string';
+
+    public $incrementing = false;
 }

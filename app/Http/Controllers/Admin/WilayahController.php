@@ -100,7 +100,7 @@ class WilayahController extends Controller
                 return view('_partials.modals.wilayah', compact('wilayah'));
             }
 
-            return view('admin.wilayah.edit', $wilayah);
+            return view('admin.wilayah.edit', compact('wilayah'));
         } catch (\Throwable $th) {
             //throw $th;
             return $th->getMessage();
