@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Teknisi;
 use Illuminate\Http\Request;
 
-class TeknisiCotroller extends Controller
+class TeknisiController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -102,7 +102,7 @@ class TeknisiCotroller extends Controller
                 return view('_partials.modals.teknisi', compact('teknisi'));
             }
 
-            return view('admin.teknisi.edit', $teknisi);
+            return view('admin.teknisi.edit', compact('teknisi'));
         } catch (\Throwable $th) {
             //throw $th;
             return $th->getMessage();

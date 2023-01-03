@@ -37,32 +37,10 @@
             </div>
           </div>
           <div class="card-body">
-            <table id="keluhan-table" class="table table-striped">
-              <thead class="thead-inverse">
-                <tr>
-                  <th>No</th>
-                  <th>Nama Pelanggan</th>
-                  <th>Kategori</th>
-                  <th>Deskripsi</th>
-                  <th>Penyebab</th>
-                  <th>Teknisi</th>
-                  <th>Keterangan</th>
-                </tr>
-              </thead>
-              <tbody>
-                @foreach ($dataKeluhan as $keluhan)
-                  <tr>
-                    <td scope="row">{{ $loop->iteration }}</td>
-                    <td>{{ $keluhan->nama_pelanggan }}</td>
-                    <td>{{ $keluhan->kategori }}</td>
-                    <td>{{ $keluhan->deskripsi }}</td>
-                    <td>{{ $keluhan->penyebab }}</td>
-                    <td>{{ $keluhan->nama }}</td>
-                    <td>{{ $keluhan->keterangan }}</td>
-                  </tr>
-                @endforeach
-              </tbody>
-            </table>
+            <div class="text-right mb-3">
+              <button type="button" class="btn btn-primary" onclick="newKeluhan()">+ Keluhan</button>
+            </div>
+            <div id="load-keluhan"></div>
           </div>
         </div>
       </div>
@@ -74,7 +52,16 @@
 @push('js')
   <script>
     $(function() {
+      getKeluhan()
+    });
+
+    async function getKeluhan() {
       try {
+        var sectionData = $('#load-keluhan')
+        url = "{{ route('keluhan.load') }}"
+        const response = await HitData(url, null, "GET");
+        sectionData.html(response)
+
         $("#keluhan-table").DataTable({
           'pageLength': 4,
           "responsive": true, "lengthChange": false, "autoWidth": false,
@@ -83,6 +70,81 @@
       } catch (error) {
           console.log(error)
       }
-    })
+    }
+    
+    async function newKeluhan() {
+      try {
+        var url = "{{ route('keluhan.create') }}"
+        var sectionModal = $('.modals')
+        sectionModal.html('')
+        const response = await HitData(url, null, 'GET');
+        var modalResponse = sectionModal.html(response).find('#modalKeluhan');
+
+        modalResponse.modal('show')
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    async function editKeluhan(id) {
+      try {
+        var sectionModal = $('.modals')
+        sectionModal.html('')
+        url = `/keluhan/${id}/edit`
+        const response = await HitData(url, null, 'GET')
+        var modalResponse = sectionModal.html(response).find('#modalKeluhan')
+        modalResponse.modal('show')
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    async function postCreateOrUpdate(url, type) {
+        try {
+            event.preventDefault();
+            if (type == 'POST') {
+              var data = {
+                id_pelanggan: $('#pelanggan-input').val(),
+                id_kategori: $('#kategori-input').val(),
+                deskripsi: $('#deskripsi-input').val(),
+                penyebab: $('#penyebab-input').val(),
+                status: '1'
+              }
+            } else if (type == 'PUT') {
+              var data = {
+                id_pelanggan: $('#pelanggan-input').val(),
+                id_kategori: $('#kategori-input').val(),
+                deskripsi: $('#deskripsi-input').val(),
+                penyebab: $('#penyebab-input').val(),
+                keterangan: $('#keterangan-input').val(),
+                status: $('#status-input').val(),
+              }
+            }
+            const response = await HitData(url, data, type);
+
+            notif('info', response.message)
+
+            $('#modalKeluhan').modal('hide')
+            getKeluhan()
+        } catch (error) {
+            console.log(error)
+            notif('error', error)
+        }
+    }
+
+    async function deleteKeluhan(id) {
+      try {
+        var url = `/keluhan/${id}`
+        const response = await HitData(url, null, 'DELETE');
+
+        notif('info', response.message)
+
+        getKeluhan()
+      } catch (error) {
+        console.log(error)
+        notif('error', error)
+      }
+    }
   </script>
 @endpush
+

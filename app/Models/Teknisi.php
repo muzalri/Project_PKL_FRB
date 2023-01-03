@@ -11,5 +11,11 @@ class Teknisi extends Model
 
     protected $table = 'tbl_teknisi';
 
-    protected $fillable = ['nama', 'jabatan', 'nik', 'no_hp', 'alamat' , 'status'];
+    protected $fillable = ['id', 'nama', 'jabatan', 'nik', 'no_hp', 'alamat' , 'status'];
+    
+    protected $primaryKey = 'id';
+
+    protected $keyType = 'string';
+
+    public $incrementing = false;
 }
